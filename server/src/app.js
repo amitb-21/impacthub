@@ -12,6 +12,7 @@ import cookieParser from 'cookie-parser';
 // import aiRoutes from './routes/ai.routes.js';
 // import dashboardRoutes from './routes/dashboard.routes.js';
 // import errorHandler from './middleware/errorHandler.js';
+import testRoutes from './routes/test.routes.js';
 
 const app = express();
 app.use(helmet());
@@ -27,6 +28,7 @@ app.use(cookieParser());
 // app.use('/api/events', eventRoutes);
 // app.use('/api/ai', aiRoutes);
 // app.use('/api/dashboard', dashboardRoutes);
+app.use('/api', testRoutes);
 
 app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
 // app.use(errorHandler);
