@@ -89,3 +89,5 @@ export const registerForEvent = async (req, res) => {
     res.status(500).json({ message: 'Failed to register for event', error: error.message });
   }
 };
+//If event capacity is full, and someone unregisters, the waiting person must be notified.
+//session storage flash.(no double meaning)

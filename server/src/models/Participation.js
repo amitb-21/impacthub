@@ -5,11 +5,18 @@ const participationSchema = new mongoose.Schema({
   event: { type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true },
 
   registeredAt: { type: Date, default: Date.now },
-  status: { type: String, enum: ['REGISTERED', 'ATTENDED', 'CANCELLED'], default: 'REGISTERED' },
+  status: { type: String, enum: ['REGISTERED', 'ATTENDED', 'CANCELLED'], default: 'REGISTERED', index: true },
 
   // Gamification
   pointsEarned: { type: Number, default: 0 },
-  badgesEarned: [String]
+  badgesEarned: [String],
+
+  // Feedback & certification
+  feedback: String,
+  rating: { type: Number, min: 1, max: 5 },
+  certificateIssued: { type: Boolean, default: false },
+
+  isDeleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
 participationSchema.index({ user: 1, event: 1 }, { unique: true });

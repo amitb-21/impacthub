@@ -8,25 +8,31 @@ const eventSchema = new mongoose.Schema({
   description: String,
   category: { type: String, default: 'other' },
 
-  dateStart: { type: Date, required: true },
+  tags: [String],
+  dateStart: { type: Date, required: true, index: true },
   dateEnd: Date,
 
-  location: { text: String, city: String, state: String },
-  maxCapacity: { type: Number, default: 50 },
+  isOnline: { type: Boolean, default: false },
+  location: { text: String, city: String, state: String, country: String },
+  coordinates: { lat: Number, lng: Number },
+
+  requirements: String,
+  maxCapacity: { type: Number, default: null },
 
   participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  status: { 
-    type: String, 
-    enum: ['DRAFT', 'PUBLISHED', 'COMPLETED'], 
-    default: 'PUBLISHED' 
+  status: {
+    type: String,
+    enum: ['DRAFT', 'PUBLISHED', 'COMPLETED'],
+    default: 'PUBLISHED'
   },
 
-  coverImage: String
+  coverImage: String,
+  isDeleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
 // Helper virtual
 eventSchema.virtual('availableSpots').get(function () {
-  return Math.max(0, this.maxCapacity - this.participants.length);
+  return this.maxCapacity ? Math.max(0, this.maxCapacity - this.participants.length) : Infinity;
 });
 
 export default mongoose.model('Event', eventSchema);

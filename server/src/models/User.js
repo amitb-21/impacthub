@@ -1,23 +1,36 @@
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-  firebaseUid: { type: String, required: true, unique: true },
+  firebaseUid: { type: String, required: true, unique: true, index: true },
   name: { type: String, required: true, trim: true },
-  email: { type: String, required: true, unique: true, lowercase: true },
+  email: { type: String, required: true, unique: true, lowercase: true, index: true },
+  phone: String,
+
   role: { type: String, enum: ['USER', 'NGO_ADMIN', 'ADMIN'], default: 'USER' },
 
   // Gamification
   points: { type: Number, default: 0, min: 0 },
   level: { type: Number, default: 1, min: 1 },
-  badges: [{ 
-    type: String, 
-    enum: ['eco-warrior', 'tree-planter', 'cleanup-hero', 'volunteer-veteran', 'community-leader'] 
+  badges: [{
+    type: String,
+    enum: ['eco-warrior', 'tree-planter', 'cleanup-hero', 'volunteer-veteran', 'community-leader']
   }],
 
   // Optional profile info
   avatar: String,
   bio: String,
-  lastLoginAt: Date
+  location: { city: String, state: String, country: String },
+  interests: [String],
+
+  // Notifications
+  notifications: [{
+    message: String,
+    read: { type: Boolean, default: false },
+    createdAt: { type: Date, default: Date.now }
+  }],
+
+  lastLoginAt: Date,
+  isDeleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
 // Virtual level calculation
