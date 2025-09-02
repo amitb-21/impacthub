@@ -23,7 +23,7 @@ const eventSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['DRAFT', 'PUBLISHED', 'COMPLETED'],
-    default: 'PUBLISHED'
+    default: 'DRAFT',
   },
 
   coverImage: String,
