@@ -19,7 +19,6 @@ const eventSchema = new mongoose.Schema({
   requirements: String,
   maxCapacity: { type: Number, default: null },
 
-  participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   status: {
     type: String,
     enum: ['DRAFT', 'PUBLISHED', 'COMPLETED'],
@@ -30,9 +29,14 @@ const eventSchema = new mongoose.Schema({
   isDeleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
-// Helper virtual
-eventSchema.virtual('availableSpots').get(function () {
-  return this.maxCapacity ? Math.max(0, this.maxCapacity - this.participants.length) : Infinity;
+// Helper virtual (calculated later from Participation)
+eventSchema.virtual('availableSpots').get(async function () {
+  if (!this.maxCapacity) return Infinity;
+
+  // Lazy require to avoid circular import issues
+  const Participation = mongoose.model('Participation');
+  const count = await Participation.countDocuments({ event: this._id, isDeleted: false });
+  return Math.max(0, this.maxCapacity - count);
 });
 
 export default mongoose.model('Event', eventSchema);

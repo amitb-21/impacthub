@@ -1,15 +1,24 @@
-import express from 'express'
-const router=express.Router();
-import airouter from './ai.routes';
-import authrouter from './auth.routes';
-import dashboardrouter from './dashboard.routes';
-import eventrouter from './event.routes';
-import ngorouter from './ngo.routes';
-import testrouter from './test.routes';
-router.use(airouter);
-router.use(authrouter);
-router.use(dashboardrouter);
-router.use(eventrouter);
-router.use(ngorouter);
-router.use(testrouter);
+import express from 'express';
+const router = express.Router();
+
+// Import all route modules
+import authRouter from './auth.routes.js';
+import ngoRouter from './ngo.routes.js';
+import eventRouter from './event.routes.js';
+import aiRouter from './ai.routes.js';
+import dashboardRouter from './dashboard.routes.js';
+import participationRouter from './participation.routes.js';
+import verificationRouter from './verification.routes.js';
+import testRouter from './test.routes.js';
+
+// Mount all routes
+router.use('/auth', authRouter);
+router.use('/ngos', ngoRouter);
+router.use('/events', eventRouter);
+router.use('/ai', aiRouter);
+router.use('/dashboard', dashboardRouter);
+router.use('/participations', participationRouter);
+router.use('/verification-reports', verificationRouter);
+router.use('/test', testRouter);
+
 export default router;
