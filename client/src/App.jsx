@@ -5,8 +5,12 @@ import {
   Route,
   Outlet,
 } from "react-router-dom";
+
+// Layout Components
 import Navbar from "./components/layout/Navbar.jsx";
 import Footer from "./components/layout/Footer.jsx";
+
+// Page Components
 import Login from "./pages/Auth/Login.jsx";
 import Signup from "./pages/Auth/Signup.jsx";
 import Dashboard from "./pages/Dashboard/Dashboard.jsx";
@@ -16,8 +20,11 @@ import EventsList from "./pages/Events/EventsList.jsx";
 import EventCreate from "./pages/Events/EventCreate.jsx";
 import EventDetails from "./pages/Events/EventDetails.jsx";
 import AdminView from "./pages/Admin/AdminView.jsx";
+
+// Global Styles
 import "./App.css";
 
+// This component wraps pages that should have the Navbar and Footer
 const AppLayout = () => {
   return (
     <>
@@ -34,9 +41,11 @@ export default function App() {
   return (
     <Router>
       <Routes>
+        {/* Routes without Navbar/Footer */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
+        {/* Routes with Navbar/Footer */}
         <Route element={<AppLayout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />

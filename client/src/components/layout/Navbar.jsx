@@ -6,10 +6,9 @@ import "./Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { currentUser, logout } = useAuthStore((state) => ({
-    currentUser: state.currentUser,
-    logout: state.logout,
-  }));
+  const currentUser = useAuthStore((state) => state.currentUser);
+  const logout = useAuthStore((state) => state.logout);
+
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
@@ -69,7 +68,7 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   to="/login"
-                  className="nav-links-mobile"
+                  className="nav-links"
                   onClick={closeMobileMenu}
                 >
                   Login
@@ -78,7 +77,7 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   to="/signup"
-                  className="nav-links-mobile"
+                  className="nav-links-btn"
                   onClick={closeMobileMenu}
                 >
                   Sign Up

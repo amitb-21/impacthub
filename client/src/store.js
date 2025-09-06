@@ -7,6 +7,9 @@ const useAuthStore = create((set) => ({
   loading: false,
   error: null,
 
+  // Action to clear the error message
+  clearError: () => set({ error: null }),
+
   signup: async (username, email, password) => {
     set({ loading: true, error: null });
     try {

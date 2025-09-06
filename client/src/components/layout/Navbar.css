@@ -61,7 +61,19 @@
 
 .nav-links:hover {
   color: #2e9cca; /* Primary Accent */
-  border-bottom: 4px solid #2e9cca;
+}
+
+.nav-links-btn {
+  background-color: #2e9cca;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.3s ease-out;
+}
+
+.nav-links-btn:hover {
+  background-color: #29648a;
 }
 
 .menu-icon {
@@ -119,7 +131,6 @@
     background-color: #29648a; /* Secondary Accent */
     color: #ffffff;
     border-radius: 0;
-    border-bottom: none;
   }
 
   .navbar-logo {
@@ -138,7 +149,7 @@
     font-size: 1.8rem;
     cursor: pointer;
   }
-  
+
   .nav-links-mobile {
     display: block;
     text-align: center;
