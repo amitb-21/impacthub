@@ -6,20 +6,17 @@ import { PageHeader } from "@primer/react";
 import { Box, Button } from "@primer/react";
 import "./auth.css";
 
-import logo from "../../assets/logo.svg";
+import logo from "../../assets/logo.jpeg";
 import { Link } from "react-router-dom";
 import server from "../../../Environment";
-const server_url=server;
-const Login = () => {
-  // useEffect(() => {
-  //   localStorage.removeItem("token");
-  //   localStorage.removeItem("userId");
-  //   setCurrentUser(null);
-  // });
 
+const server_url = server;
+
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
   const { setCurrentUser } = useAuth();
 
   const handleLogin = async (e) => {
@@ -48,59 +45,104 @@ const Login = () => {
 
   return (
     <div className="login-wrapper">
-      <div className="login-logo-container">
-        <img className="logo-login" src={logo} alt="Logo" />
+      {/* Background decoration */}
+      <div className="bg-decoration">
+        <div className="circle circle-1"></div>
+        <div className="circle circle-2"></div>
+        <div className="circle circle-3"></div>
       </div>
 
-      <div className="login-box-wrapper">
-        <div className="login-heading">
-          <Box sx={{ padding: 1 }}>
-            <PageHeader>
-              <PageHeader.TitleArea variant="large">
-                <PageHeader.Title>Sign In</PageHeader.Title>
-              </PageHeader.TitleArea>
-            </PageHeader>
-          </Box>
-        </div>
-        <div className="login-box">
-          <div>
-            <label className="label">Email address</label>
-            <input
-              autoComplete="off"
-              name="Email"
-              id="Email"
-              className="input"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+      <div className="login-container">
+        {/* Logo section */}
+        <div className="login-logo-container">
+          <div className="logo-wrapper">
+            <img className="logo-login" src={logo} alt="Logo" />
           </div>
-          <div className="div">
-            <label className="label">Password</label>
-            <input
-              autoComplete="off"
-              name="Password"
-              id="Password"
-              className="input"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+          <h2 className="brand-name">ImpactHub</h2>
+        </div>
+
+        {/* Main login form */}
+        <div className="login-card">
+          <div className="login-header">
+            <Box sx={{ padding: 1 }}>
+              <PageHeader>
+                <PageHeader.TitleArea variant="large">
+                  <PageHeader.Title>Welcome Back</PageHeader.Title>
+                </PageHeader.TitleArea>
+              </PageHeader>
+            </Box>
+            <p className="login-subtitle">Sign in to your account</p>
           </div>
 
-          <Button
-            variant="primary"
-            className="login-btn"
-            disabled={loading}
-            onClick={handleLogin}
-          >
-            {loading ? "Loading..." : "Login"}
-          </Button>
-        </div>
-        <div className="pass-box">
-          <p>
-            New to ImpactHub? <Link to="/signup">Create an account</Link>
-          </p>
+          <div className="login-form">
+            <div className="form-group">
+              <label className={`form-label ${focusedField === 'email' || email ? 'active' : ''}`}>
+                Email address
+              </label>
+              <div className="input-wrapper">
+                <input
+                  autoComplete="off"
+                  name="Email"
+                  id="Email"
+                  className="form-input"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onFocus={() => setFocusedField('email')}
+                  onBlur={() => setFocusedField(null)}
+                />
+                <div className="input-focus-border"></div>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className={`form-label ${focusedField === 'password' || password ? 'active' : ''}`}>
+                Password
+              </label>
+              <div className="input-wrapper">
+                <input
+                  autoComplete="off"
+                  name="Password"
+                  id="Password"
+                  className="form-input"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setFocusedField('password')}
+                  onBlur={() => setFocusedField(null)}
+                />
+                <div className="input-focus-border"></div>
+              </div>
+            </div>
+
+            <Button
+              variant="primary"
+              className="login-btn"
+              disabled={loading}
+              onClick={handleLogin}
+            >
+              {loading ? (
+                <span className="loading-content">
+                  <span className="spinner"></span>
+                  Signing in...
+                </span>
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+          </div>
+
+          <div className="login-footer">
+            <div className="pass-box">
+              <p className="signup-text">
+                New to ImpactHub? 
+                <Link to="/signup">Create an account</Link>
+              </p>
+              <Link to="/forgot-password" className="forgot-link">
+                Forgot your password?
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,10 +1,11 @@
-import react,{useEffect} from react;
+import React,{useEffect} from 'react';
 import { useNavigate,useRoutes } from 'react-router-dom';
 import { useAuth } from './src/authContext';
-import login from './src/components/auth/login';
-import signup from './src/components/auth/signup';
+import Login from './src/components/auth/login';
+import Signup from './src/components/auth/signup';
+import Dashboard from './src/components/dashboard/dashboard';
 const projectRoutes=()=>{
-      const [currentUser,setCurrentUser]=useAuth();
+      const {currentUser,setCurrentUser}=useAuth();
       const navigate=useNavigate();
       useEffect(()=>{
           let useridfromstorage=localStorage.getItem('userId');
@@ -21,11 +22,15 @@ const projectRoutes=()=>{
       let element=useRoutes([
         {
             path:'/auth',
-            element:<login/>,
+            element:<Login/>,
         },
         {
             path:'/signup',
-            element:<signup/>,
+            element:<Signup/>,
+        },
+        {
+            path:'/',
+            element:<Dashboard/>,
         }
       ])
       return element;
