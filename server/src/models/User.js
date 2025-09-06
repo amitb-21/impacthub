@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   passwordHash: { type: String, required: true },
   phone: String,
   role: { type: String, enum: ['USER', 'NGO_ADMIN', 'ADMIN'], default: 'USER' },
+  verified: { type: Boolean, default: false }, // For NGO_ADMIN verification by ADMIN
   // Gamification
   points: { type: Number, default: 0, min: 0 },
   level: { type: Number, default: 1, min: 1 },
