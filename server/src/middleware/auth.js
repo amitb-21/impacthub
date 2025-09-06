@@ -1,14 +1,16 @@
-import admin from '../config/firebase.js';
+import { verifyJwt } from '../utils/jwt.js';
 
-export default async function auth(req, res, next) {
-  const token = req.headers.authorization?.split('Bearer ')[1];
-  if (!token) return res.status(401).json({ message: 'No token provided' });
-
+export default function auth(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+  const token = authHeader.split(' ')[1];
   try {
-    const decoded = await admin.auth().verifyIdToken(token);
-    req.user = { id: decoded.uid, email: decoded.email };
+    const decoded = verifyJwt(token);
+    req.user = decoded;
     next();
   } catch (err) {
-    res.status(401).json({ message: 'Invalid token' });
+    res.status(401).json({ message: 'Invalid or expired token' });
   }
 }
