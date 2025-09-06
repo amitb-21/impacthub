@@ -5,7 +5,7 @@ import {
   getReportById,
   updateReport,
   deleteReport
-} from '../controllers/verficationreport.controller.js';
+} from '../controllers/verificationReport.controller.js'; 
 import auth from '../middleware/auth.js';
 
 const router = express.Router();
