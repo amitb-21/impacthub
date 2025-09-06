@@ -1,169 +1,99 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useAuth } from "../../authContext";
-import server from "../../../Environment";
-import { PageHeader } from "@primer/react";
-import { Box, Button } from "@primer/react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { UserPlus } from "lucide-react"; // Import an icon
+import useAuthStore from "../../store";
 import "./auth.css";
-const server_url = server;
-import logo from "../../assets/logo.svg";
-import { Link } from "react-router-dom";
 
 const Signup = () => {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    //const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [role, setRole] = useState("");
-    const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const { signup, loading, error } = useAuthStore((state) => ({
+    signup: state.signup,
+    loading: state.loading,
+    error: state.error,
+  }));
 
-    const { setCurrentUser } = useAuth();
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    await signup(name, email, password, "USER");
+    if (!useAuthStore.getState().error) {
+      navigate("/");
+    }
+  };
 
-    const handleSignup = async (e) => {
-        e.preventDefault();
-
-        try {
-            setLoading(true);
-            const res = await axios.post(`${server_url}/signup`, {
-                name: name,
-                email: email,
-                password: password,
-                role: role,
-            });
-
-            localStorage.setItem("token", res.data.token);
-            localStorage.setItem("userId", res.data.userId);
-
-            setCurrentUser(res.data.userId);
-            setLoading(false);
-
-            window.location.href = "/";
-        } catch (err) {
-            console.error(err);
-            alert("Signup Failed!");
-            setLoading(false);
-        }
-    };
-
-    return (
-        <div className="login-wrapper">
-            <div className="login-logo-container">
-                <img className="logo-login" src={logo} alt="Logo" />
-            </div>
-
-            <div className="login-box-wrapper">
-                <div className="login-heading">
-                    <Box sx={{ padding: 1 }}>
-                        <PageHeader>
-                            <PageHeader.TitleArea variant="large">
-                                <PageHeader.Title>Sign Up</PageHeader.Title>
-                            </PageHeader.TitleArea>
-                        </PageHeader>
-                    </Box>
-                </div>
-
-                <div className="login-box">
-                    <div>
-                        <label className="label">Username</label>
-                        <input
-                            autoComplete="off"
-                            name="Username"
-                            id="Username"
-                            className="input"
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="label">Name</label>
-                        <input
-                            autoComplete="off"
-                            name="Name"
-                            id="Name"
-                            className="input"
-                            type="text"
-                            value={username}
-                            onChange={(e) => setName(e.target.value)}
-                        />
-                    </div>
-
-
-                    <div>
-                        <label className="label">Email address</label>
-                        <input
-                            autoComplete="off"
-                            name="Email"
-                            id="Email"
-                            className="input"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="div">
-                        <label className="label">Password</label>
-                        <input
-                            autoComplete="off"
-                            name="Password"
-                            id="Password"
-                            className="input"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="label">Role:</label>
-
-                        <div>
-                            <input
-                                type="radio"
-                                name="role"
-                                id="admin"
-                                value="ADMIN"
-                                checked={role === "ADMIN"}
-                                onChange={(e) => setRole(e.target.value)}
-                            />
-                            <label htmlFor="admin">ADMIN</label>
-                        </div>
-
-                        <div>
-                            <input
-                                type="radio"
-                                name="role"
-                                id="volunteer"
-                                value="VOLUNTEER"
-                                checked={role === "VOLUNTEER"}
-                                onChange={(e) => setRole(e.target.value)}
-                            />
-                            <label htmlFor="volunteer">VOLUNTEER</label>
-                        </div>
-                    </div>
-
-
-
-                    <Button
-                        variant="primary"
-                        className="login-btn"
-                        disabled={loading}
-                        onClick={handleSignup}
-                    >
-                        {loading ? "Loading..." : "Signup"}
-                    </Button>
-                </div>
-
-                <div className="pass-box">
-                    <p>
-                        Already have an account? <Link to="/auth">Login</Link>
-                    </p>
-                </div>
-            </div>
+  return (
+    <div className="login-wrapper">
+      <div className="login-logo-container">
+        {/* Logo removed and icon added */}
+        <UserPlus className="logo-icon" size={48} />
+      </div>
+      <div className="login-box-wrapper">
+        <form className="login-box" onSubmit={handleSignup}>
+          <h2>Join ImpactHub</h2>
+          <div>
+            <label className="label" htmlFor="name">
+              Name
+            </label>
+            <input
+              id="name"
+              className="input"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your name"
+              required
+            />
+          </div>
+          <div>
+            <label className="label" htmlFor="email">
+              Email
+            </label>
+            <input
+              id="email"
+              className="input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div>
+            <label className="label" htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              className="input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Create a password"
+              required
+            />
+          </div>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <button
+            className="submit-btn signup-button"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Signing up..." : "Sign Up"}
+          </button>
+        </form>
+        <div className="pass-box">
+          <p>
+            Already have an account?{" "}
+            <Link to="/login" className="signup">
+              Login
+            </Link>
+          </p>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default Signup;

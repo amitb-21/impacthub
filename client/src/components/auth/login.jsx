@@ -1,105 +1,79 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useAuth } from "../../authContext";
-
-import { PageHeader } from "@primer/react";
-import { Box, Button } from "@primer/react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { LogIn } from "lucide-react"; // Import an icon
+import useAuthStore from "../../store";
 import "./auth.css";
 
-import logo from "../../assets/logo.svg";
-import { Link } from "react-router-dom";
-import server from "../../../Environment";
-const server_url=server;
 const Login = () => {
-  // useEffect(() => {
-  //   localStorage.removeItem("token");
-  //   localStorage.removeItem("userId");
-  //   setCurrentUser(null);
-  // });
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { setCurrentUser } = useAuth();
+  const navigate = useNavigate();
+  const { login, loading, error } = useAuthStore((state) => ({
+    login: state.login,
+    loading: state.loading,
+    error: state.error,
+  }));
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    try {
-      setLoading(true);
-      const res = await axios.post(`${server_url}/login`, {
-        email: email,
-        password: password,
-      });
-
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("userId", res.data.userId);
-
-      setCurrentUser(res.data.userId);
-      setLoading(false);
-
-      window.location.href = "/";
-    } catch (err) {
-      console.error(err);
-      alert("Login Failed!");
-      setLoading(false);
+    await login(email, password);
+    if (!useAuthStore.getState().error) {
+      navigate("/");
     }
   };
 
   return (
     <div className="login-wrapper">
       <div className="login-logo-container">
-        <img className="logo-login" src={logo} alt="Logo" />
+        {/* Logo removed and icon added */}
+        <LogIn className="logo-icon" size={48} />
       </div>
-
       <div className="login-box-wrapper">
-        <div className="login-heading">
-          <Box sx={{ padding: 1 }}>
-            <PageHeader>
-              <PageHeader.TitleArea variant="large">
-                <PageHeader.Title>Sign In</PageHeader.Title>
-              </PageHeader.TitleArea>
-            </PageHeader>
-          </Box>
-        </div>
-        <div className="login-box">
+        <form className="login-box" onSubmit={handleLogin}>
+          <h2>Welcome Back!</h2>
           <div>
-            <label className="label">Email address</label>
+            <label className="label" htmlFor="email">
+              Email
+            </label>
             <input
-              autoComplete="off"
-              name="Email"
-              id="Email"
+              id="email"
               className="input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
             />
           </div>
-          <div className="div">
-            <label className="label">Password</label>
+          <div>
+            <label className="label" htmlFor="password">
+              Password
+            </label>
             <input
-              autoComplete="off"
-              name="Password"
-              id="Password"
+              id="password"
               className="input"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              required
             />
           </div>
-
-          <Button
-            variant="primary"
-            className="login-btn"
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <button
+            className="submit-btn login-btn"
+            type="submit"
             disabled={loading}
-            onClick={handleLogin}
           >
-            {loading ? "Loading..." : "Login"}
-          </Button>
-        </div>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
         <div className="pass-box">
           <p>
-            New to ImpactHub? <Link to="/signup">Create an account</Link>
+            Don't have an account?{" "}
+            <Link to="/signup" className="signup">
+              Sign Up
+            </Link>
           </p>
         </div>
       </div>
