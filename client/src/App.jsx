@@ -16,6 +16,7 @@ import EventsList from "./pages/Events/EventsList.jsx";
 import EventCreate from "./pages/Events/EventCreate.jsx";
 import EventDetails from "./pages/Events/EventDetails.jsx";
 import AdminView from "./pages/Admin/AdminView.jsx";
+import "./App.css";
 
 const AppLayout = () => {
   return (

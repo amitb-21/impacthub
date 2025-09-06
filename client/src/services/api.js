@@ -1,8 +1,24 @@
-// API service template
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = process.env.VITE_API_URL || 'http://localhost:5050/api';
-
-export const api = axios.create({
-  baseURL: API_URL,
+const api = axios.create({
+  baseURL: "http://localhost:5050/api", // Connect to your local backend
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
+
+// Interceptor to add the auth token to every request if it exists
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export default api;

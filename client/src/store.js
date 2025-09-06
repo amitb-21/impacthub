@@ -1,49 +1,55 @@
-// client/src/store.js
-import { create } from 'zustand'
-import axios from 'axios';
-import server from '../Environment';
-
-const server_url = server;
+import { create } from "zustand";
+import api from "./services/api";
 
 const useAuthStore = create((set) => ({
-  currentUser: null,
+  currentUser: JSON.parse(localStorage.getItem("currentUser")) || null,
+  token: localStorage.getItem("token") || null,
   loading: false,
   error: null,
+
+  signup: async (username, email, password) => {
+    set({ loading: true, error: null });
+    try {
+      await api.post("/auth/register", { username, email, password });
+      set({ loading: false });
+      return true; // Indicate success
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.message || "An unexpected error occurred.";
+      set({ error: errorMsg, loading: false });
+      return false; // Indicate failure
+    }
+  },
+
   login: async (email, password) => {
     set({ loading: true, error: null });
     try {
-      const res = await axios.post(`${server_url}/login`, {
-        email,
-        password,
-      });
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("userId", res.data.userId);
-      set({ currentUser: res.data.userId, loading: false });
+      const { data } = await api.post("/auth/login", { email, password });
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("currentUser", JSON.stringify(data.user));
+      api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+      set({ currentUser: data.user, token: data.token, loading: false });
+      return true; // Indicate success
     } catch (err) {
-      set({ error: "Login Failed!", loading: false });
+      const errorMsg =
+        err.response?.data?.message || "Invalid email or password.";
+      set({ error: errorMsg, loading: false });
+      return false; // Indicate failure
     }
   },
-  signup: async (name, email, password, role) => {
-    set({ loading: true, error: null });
-    try {
-      const res = await axios.post(`${server_url}/signup`, {
-        name,
-        email,
-        password,
-        role,
-      });
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("userId", res.data.userId);
-      set({ currentUser: res.data.userId, loading: false });
-    } catch (err) {
-      set({ error: "Signup Failed!", loading: false });
-    }
-  },
+
   logout: () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    set({ currentUser: null });
-  }
+    localStorage.removeItem("currentUser");
+    delete api.defaults.headers.common["Authorization"];
+    set({ currentUser: null, token: null });
+  },
 }));
+
+// Set the initial auth token if it exists
+const initialToken = localStorage.getItem("token");
+if (initialToken) {
+  api.defaults.headers.common["Authorization"] = `Bearer ${initialToken}`;
+}
 
 export default useAuthStore;

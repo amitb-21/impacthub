@@ -1,1 +1,14 @@
-color
+color:root {
+  --primary-dark: #25274d;
+  --secondary-dark: #464866;
+  --text-color: #aaabb8;
+  --primary-accent: #2e9cca;
+  --secondary-accent: #29648a;
+}
+
+body {
+  background-color: var(--primary-dark);
+  color: var(--text-color);
+  font-family: sans-serif;
+  margin: 0;
+}
