@@ -1,7 +1,11 @@
-// Auth routes stub
-import express from 'express'
-import { signup, login } from '../controllers/auth.controller.js';
+import express from 'express';
+import { signup, login, me } from '../controllers/auth.controller.js';
+import auth from '../middleware/auth.js';
+
 const router = express.Router();
-router.post('/auth/signup', signup);
-router.post('/auth/login', login);
+
+router.post('/signup', signup);
+router.post('/login', login);
+router.get('/me', auth, me);
+
 export default router;

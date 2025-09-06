@@ -1,5 +1,4 @@
 import express from 'express';
-const router=express.Router();
 import {
   createEvent,
   getAllEvents,
@@ -8,12 +7,17 @@ import {
   deleteEvent,
   registerForEvent,
   unregisterFromEvent
-} from './controllers/event.controller.js';
+} from '../controllers/event.controller.js';
+import auth from '../middleware/auth.js';
 
-router.post('/event/', createEvent);
-router.get('/event', getAllEvents);
-router.get('/event/:id', getEventById);
-router.put('/event/:id', updateEvent);
-router.delete('/event/:id', deleteEvent);
-router.post('/event/:id/join', registerForEvent);
-router.post('/event/:id/unjoin', unregisterFromEvent);
+const router = express.Router();
+
+router.post('/', auth, createEvent);
+router.get('/', getAllEvents); 
+router.get('/:id', getEventById);
+router.put('/:id', auth, updateEvent);
+router.delete('/:id', auth, deleteEvent);
+router.post('/:id/register', auth, registerForEvent);
+router.delete('/:id/register', auth, unregisterFromEvent);
+
+export default router;

@@ -6,15 +6,16 @@ import {
   updateNGO,
   deleteNGO,
   verifyNGO,
-} from '../controllers/ngoController.js';
+} from '../controllers/ngo.controller.js';
+import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/ngo/', createNGO);
-router.get('/ngo', getAllNGOs);
-router.get('/ngo/:id', getNGOById);
-router.put('/ngo/:id', updateNGO);
-router.delete('/ngo/:id', deleteNGO);
-router.patch('/ngo/:id/verify', verifyNGO);
+router.post('/', auth, createNGO);
+router.get('/', getAllNGOs);
+router.get('/:id', getNGOById);
+router.put('/:id', auth, updateNGO);
+router.delete('/:id', auth, deleteNGO);
+router.patch('/:id/verify', auth, verifyNGO);
 
 export default router;
