@@ -1,7 +1,7 @@
 // AI routes stub
-import { Router } from 'express';
+import express from 'express'
 import { summarize, verify } from '../controllers/ai.controller.js';
-const router = Router();
-router.post('/summarize', summarize);
-router.post('/verify', verify);
+const router = express.Router();
+router.post('/ai/summarize', summarize);
+router.post('/ai/verify', verify);
 export default router;

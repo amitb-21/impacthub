@@ -1,3 +1,5 @@
+import express from 'express';
+const router=express.Router();
 import {
   createEvent,
   getAllEvents,
@@ -8,10 +10,10 @@ import {
   unregisterFromEvent
 } from './controllers/event.controller.js';
 
-router.post('/', createEvent);
-router.get('/', getAllEvents);
-router.get('/:id', getEventById);
-router.put('/:id', updateEvent);
-router.delete('/:id', deleteEvent);
-router.post('/:id/join', registerForEvent);
-router.post('/:id/unjoin', unregisterFromEvent);
+router.post('/event/', createEvent);
+router.get('/event', getAllEvents);
+router.get('/event/:id', getEventById);
+router.put('/event/:id', updateEvent);
+router.delete('/event/:id', deleteEvent);
+router.post('/event/:id/join', registerForEvent);
+router.post('/event/:id/unjoin', unregisterFromEvent);

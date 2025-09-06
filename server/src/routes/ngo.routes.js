@@ -10,11 +10,11 @@ import {
 
 const router = express.Router();
 
-router.post('/', createNGO);
-router.get('/', getAllNGOs);
-router.get('/:id', getNGOById);
-router.put('/:id', updateNGO);
-router.delete('/:id', deleteNGO);
-router.patch('/:id/verify', verifyNGO);
+router.post('/ngo/', createNGO);
+router.get('/ngo', getAllNGOs);
+router.get('/ngo/:id', getNGOById);
+router.put('/ngo/:id', updateNGO);
+router.delete('/ngo/:id', deleteNGO);
+router.patch('/ngo/:id/verify', verifyNGO);
 
 export default router;
