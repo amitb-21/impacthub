@@ -15,9 +15,17 @@ export async function metrics(req, res) {
       Participation.countDocuments({ isDeleted: false }),
     ]);
 
-    return res.status(200).json({ users, ngos, events, participants });
+    return res.status(200).json({
+      users: users || 0,
+      ngos: ngos || 0,
+      events: events || 0,
+      participants: participants || 0
+    });
   } catch (error) {
-    return res.status(500).json({ message: 'Failed to fetch metrics', error: error.message });
+    return res.status(500).json({
+      message: 'Failed to fetch metrics',
+      error: error.message
+    });
   }
 }
 
@@ -26,16 +34,19 @@ export async function metrics(req, res) {
  */
 export async function leaderboard(req, res) {
   try {
-    const { limit = 10 } = req.query;
+    const safeLimit = Math.min(Number(req.query.limit) || 10, 50);
 
     const topUsers = await User.find({ isDeleted: false })
       .sort({ points: -1 })
-      .limit(parseInt(limit, 10))
+      .limit(safeLimit)
       .select('name email points level badges avatar')
       .lean();
 
     return res.status(200).json(topUsers);
   } catch (error) {
-    return res.status(500).json({ message: 'Failed to fetch leaderboard', error: error.message });
+    return res.status(500).json({
+      message: 'Failed to fetch leaderboard',
+      error: error.message
+    });
   }
 }

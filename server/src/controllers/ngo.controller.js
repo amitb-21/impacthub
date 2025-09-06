@@ -1,12 +1,28 @@
 import NGO from '../models/NGO.js';
+import Event from '../models/Event.js';
+import Participation from '../models/Participation.js';
 
 /**
- * Create NGO (NGO_ADMIN only)
+ * Create NGO (NGO_ADMIN or ADMIN)
  */
 export const createNGO = async (req, res) => {
   try {
     if (req.user.role !== 'NGO_ADMIN' && req.user.role !== 'ADMIN') {
-      return res.status(403).json({ message: 'Forbidden: Only NGO Admins or Admins can create NGOs' });
+      return res.status(403).json({ message: 'Only NGO Admins or Admins can create NGOs' });
+    }
+
+    const { name, email, registrationNumber } = req.body;
+    if (!name || !email || !registrationNumber) {
+      return res.status(400).json({ message: 'Name, email, and registration number are required' });
+    }
+
+    // Prevent duplicates
+    const exists = await NGO.findOne({
+      $or: [{ email }, { registrationNumber }],
+      isDeleted: false
+    });
+    if (exists) {
+      return res.status(400).json({ message: 'An NGO with this email or registration number already exists' });
     }
 
     const ngo = new NGO({
@@ -35,9 +51,9 @@ export const getAllNGOs = async (req, res) => {
 
     if (search) {
       query.$or = [
-        { name: new RegExp(search, 'i') },
-        { description: new RegExp(search, 'i') },
-        { tags: { $in: [new RegExp(search, 'i')] } },
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { tags: { $regex: search, $options: 'i' } },
       ];
     }
 
@@ -47,8 +63,8 @@ export const getAllNGOs = async (req, res) => {
 
     const ngos = await NGO.find(query)
       .skip((page - 1) * limit)
-      .limit(parseInt(limit, 10))
-      .populate('createdBy', 'name email')
+      .limit(Math.min(parseInt(limit, 10), 50))
+      .populate({ path: 'createdBy', select: 'name email', match: { isDeleted: false } })
       .lean();
 
     const total = await NGO.countDocuments(query);
@@ -68,7 +84,7 @@ export const getAllNGOs = async (req, res) => {
 export const getNGOById = async (req, res) => {
   try {
     const ngo = await NGO.findOne({ _id: req.params.id, isDeleted: false })
-      .populate('createdBy', 'name email')
+      .populate({ path: 'createdBy', select: 'name email', match: { isDeleted: false } })
       .lean();
 
     if (!ngo) {
@@ -92,6 +108,11 @@ export const updateNGO = async (req, res) => {
       query.createdBy = req.user._id; // restrict to their own NGOs
     }
 
+    // Prevent non-admins from changing verification status
+    if ('verificationStatus' in req.body && req.user.role !== 'ADMIN') {
+      delete req.body.verificationStatus;
+    }
+
     const ngo = await NGO.findOneAndUpdate(query, req.body, {
       new: true,
       runValidators: true,
@@ -112,6 +133,7 @@ export const updateNGO = async (req, res) => {
 
 /**
  * Delete NGO (soft delete) — NGO_ADMIN only their own, ADMIN any
+ * Also soft deletes related events & participations
  */
 export const deleteNGO = async (req, res) => {
   try {
@@ -127,6 +149,13 @@ export const deleteNGO = async (req, res) => {
       return res.status(404).json({ message: 'NGO not found or not authorized' });
     }
 
+    // Soft delete related events & participations
+    const events = await Event.find({ ngo: ngo._id, isDeleted: false });
+    const eventIds = events.map(e => e._id);
+
+    await Event.updateMany({ ngo: ngo._id }, { isDeleted: true });
+    await Participation.updateMany({ event: { $in: eventIds } }, { isDeleted: true });
+
     return res.status(200).json({ message: 'NGO deleted successfully (soft delete applied)' });
   } catch (error) {
     return res.status(500).json({ message: 'Failed to delete NGO', error: error.message });
@@ -139,7 +168,7 @@ export const deleteNGO = async (req, res) => {
 export const verifyNGO = async (req, res) => {
   try {
     if (req.user.role !== 'ADMIN') {
-      return res.status(403).json({ message: 'Forbidden: Only Admins can verify NGOs' });
+      return res.status(403).json({ message: 'Only Admins can verify NGOs' });
     }
 
     const ngo = await NGO.findOneAndUpdate(

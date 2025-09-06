@@ -1,13 +1,25 @@
 import Event from '../models/Event.js';
+import NGO from '../models/NGO.js';
 import Participation from '../models/Participation.js';
 
 /**
- * Create Event (NGO_ADMIN can create for their NGO, ADMIN can create for any)
+ * Create Event (NGO_ADMIN can create for their NGO, ADMIN for any)
  */
 export const createEvent = async (req, res) => {
   try {
     if (req.user.role !== 'NGO_ADMIN' && req.user.role !== 'ADMIN') {
-      return res.status(403).json({ message: 'Forbidden: Only NGO Admins or Admins can create events' });
+      return res.status(403).json({ message: 'Only NGO Admins or Admins can create events' });
+    }
+
+    // NGO_ADMIN: ensure NGO belongs to them
+    if (req.user.role === 'NGO_ADMIN') {
+      if (!req.body.ngo) {
+        return res.status(400).json({ message: 'NGO ID is required' });
+      }
+      const ngo = await NGO.findOne({ _id: req.body.ngo, createdBy: req.user._id, isDeleted: false });
+      if (!ngo) {
+        return res.status(403).json({ message: 'You can only create events for your own NGO' });
+      }
     }
 
     const event = new Event({
@@ -29,8 +41,8 @@ export const createEvent = async (req, res) => {
 export const getAllEvents = async (req, res) => {
   try {
     const events = await Event.find({ isDeleted: false })
-      .populate('ngo', 'name')
-      .populate('createdBy', 'name email')
+      .populate({ path: 'ngo', select: 'name', match: { isDeleted: false } })
+      .populate({ path: 'createdBy', select: 'name email', match: { isDeleted: false } })
       .lean();
 
     return res.status(200).json(events);
@@ -45,8 +57,8 @@ export const getAllEvents = async (req, res) => {
 export const getEventById = async (req, res) => {
   try {
     const event = await Event.findOne({ _id: req.params.id, isDeleted: false })
-      .populate('ngo', 'name')
-      .populate('createdBy', 'name email')
+      .populate({ path: 'ngo', select: 'name', match: { isDeleted: false } })
+      .populate({ path: 'createdBy', select: 'name email', match: { isDeleted: false } })
       .lean();
 
     if (!event) {
@@ -60,7 +72,7 @@ export const getEventById = async (req, res) => {
 };
 
 /**
- * Update Event (NGO_ADMIN can update their own, ADMIN can update any)
+ * Update Event (NGO_ADMIN can update their own, ADMIN any)
  */
 export const updateEvent = async (req, res) => {
   try {
@@ -68,6 +80,14 @@ export const updateEvent = async (req, res) => {
 
     if (req.user.role === 'NGO_ADMIN') {
       query.createdBy = req.user._id; // restrict to own events
+    }
+
+    // If updating maxCapacity, check registrations
+    if (req.body.maxCapacity) {
+      const count = await Participation.countDocuments({ event: req.params.id, isDeleted: false });
+      if (count > req.body.maxCapacity) {
+        return res.status(400).json({ message: 'Max capacity cannot be less than current registrations' });
+      }
     }
 
     const event = await Event.findOneAndUpdate(query, req.body, {
@@ -102,6 +122,9 @@ export const deleteEvent = async (req, res) => {
       return res.status(404).json({ message: 'Event not found or not authorized' });
     }
 
+    // Soft delete related participations
+    await Participation.updateMany({ event: event._id }, { isDeleted: true });
+
     return res.status(200).json({ message: 'Event deleted successfully (soft delete applied)' });
   } catch (error) {
     return res.status(500).json({ message: 'Failed to delete event', error: error.message });
@@ -120,6 +143,14 @@ export const registerForEvent = async (req, res) => {
 
     if (req.user.role !== 'USER') {
       return res.status(403).json({ message: 'Only regular users can register for events' });
+    }
+
+    // Check event status & dates
+    if (event.status !== 'PUBLISHED') {
+      return res.status(400).json({ message: 'Event is not open for registration' });
+    }
+    if (event.dateEnd && new Date() > event.dateEnd) {
+      return res.status(400).json({ message: 'Event has already ended' });
     }
 
     // Check capacity
@@ -144,15 +175,15 @@ export const registerForEvent = async (req, res) => {
 };
 
 /**
- * Unregister from Event (USER)
+ * Unregister from Event (USER) – soft delete participation
  */
 export const unregisterFromEvent = async (req, res) => {
   try {
-    const participation = await Participation.findOneAndDelete({
-      user: req.user._id,
-      event: req.params.id,
-      isDeleted: false,
-    });
+    const participation = await Participation.findOneAndUpdate(
+      { user: req.user._id, event: req.params.id, isDeleted: false },
+      { isDeleted: true },
+      { new: true }
+    );
 
     if (!participation) {
       return res.status(400).json({ message: 'You are not registered for this event' });
@@ -161,5 +192,52 @@ export const unregisterFromEvent = async (req, res) => {
     return res.status(200).json({ message: 'Unregistered successfully' });
   } catch (error) {
     return res.status(500).json({ message: 'Failed to unregister from event', error: error.message });
+  }
+};
+/**
+ * Get events for the current logged-in user
+ * - USER: Events they are registered for
+ * - NGO_ADMIN: Events they created
+ * - ADMIN: All events
+ */
+export const myEvents = async (req, res) => {
+  try {
+    let events = [];
+
+    if (req.user.role === 'USER') {
+      // Get events where user is a participant
+      const participations = await Participation.find({
+        user: req.user._id,
+        isDeleted: false
+      }).select('event');
+
+      const eventIds = participations.map(p => p.event);
+
+      events = await Event.find({ _id: { $in: eventIds }, isDeleted: false })
+        .populate({ path: 'ngo', select: 'name', match: { isDeleted: false } })
+        .populate({ path: 'createdBy', select: 'name email', match: { isDeleted: false } })
+        .lean();
+    }
+    else if (req.user.role === 'NGO_ADMIN') {
+      // Get events created by this user
+      events = await Event.find({ createdBy: req.user._id, isDeleted: false })
+        .populate({ path: 'ngo', select: 'name', match: { isDeleted: false } })
+        .populate({ path: 'createdBy', select: 'name email', match: { isDeleted: false } })
+        .lean();
+    }
+    else if (req.user.role === 'ADMIN') {
+      // Get all events
+      events = await Event.find({ isDeleted: false })
+        .populate({ path: 'ngo', select: 'name', match: { isDeleted: false } })
+        .populate({ path: 'createdBy', select: 'name email', match: { isDeleted: false } })
+        .lean();
+    }
+    else {
+      return res.status(403).json({ message: 'Role not authorized to view events' });
+    }
+
+    return res.status(200).json(events);
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to fetch events', error: error.message });
   }
 };

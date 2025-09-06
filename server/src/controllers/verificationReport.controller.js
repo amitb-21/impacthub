@@ -7,7 +7,19 @@ import NGO from '../models/NGO.js';
 export const createReport = async (req, res) => {
   try {
     if (req.user.role !== 'ADMIN') {
-      return res.status(403).json({ message: 'Forbidden: Only Admins can create verification reports' });
+      return res.status(403).json({ message: 'Only Admins can create verification reports' });
+    }
+
+    // Ensure NGO exists and is active
+    const ngo = await NGO.findOne({ _id: req.body.ngo, isDeleted: false });
+    if (!ngo) {
+      return res.status(404).json({ message: 'NGO not found' });
+    }
+
+    // Prevent duplicate active reports for the same NGO
+    const existingReport = await VerificationReport.findOne({ ngo: ngo._id, isDeleted: false });
+    if (existingReport) {
+      return res.status(400).json({ message: 'A verification report for this NGO already exists' });
     }
 
     const report = new VerificationReport({
@@ -16,6 +28,12 @@ export const createReport = async (req, res) => {
     });
 
     const saved = await report.save();
+
+    // Auto-verify NGO if criteria met
+    if (req.body.status === 'DONE' && req.body.credibilityScore >= 70) {
+      await NGO.findByIdAndUpdate(ngo._id, { verificationStatus: 'VERIFIED' });
+    }
+
     return res.status(201).json(saved);
   } catch (error) {
     return res.status(400).json({ message: 'Failed to create report', errors: error.errors || error.message });
@@ -28,12 +46,12 @@ export const createReport = async (req, res) => {
 export const getAllReports = async (req, res) => {
   try {
     if (req.user.role !== 'ADMIN') {
-      return res.status(403).json({ message: 'Forbidden: Only Admins can view reports' });
+      return res.status(403).json({ message: 'Only Admins can view reports' });
     }
 
     const reports = await VerificationReport.find({ isDeleted: false })
-      .populate('ngo', 'name email')
-      .populate('reviewedBy', 'name email')
+      .populate({ path: 'ngo', select: 'name email verificationStatus', match: { isDeleted: false } })
+      .populate({ path: 'reviewedBy', select: 'name email', match: { isDeleted: false } })
       .lean();
 
     return res.status(200).json(reports);
@@ -48,12 +66,12 @@ export const getAllReports = async (req, res) => {
 export const getReportById = async (req, res) => {
   try {
     if (req.user.role !== 'ADMIN') {
-      return res.status(403).json({ message: 'Forbidden: Only Admins can view reports' });
+      return res.status(403).json({ message: 'Only Admins can view reports' });
     }
 
     const report = await VerificationReport.findOne({ _id: req.params.id, isDeleted: false })
-      .populate('ngo', 'name email')
-      .populate('reviewedBy', 'name email')
+      .populate({ path: 'ngo', select: 'name email verificationStatus', match: { isDeleted: false } })
+      .populate({ path: 'reviewedBy', select: 'name email', match: { isDeleted: false } })
       .lean();
 
     if (!report) {
@@ -72,8 +90,12 @@ export const getReportById = async (req, res) => {
 export const updateReport = async (req, res) => {
   try {
     if (req.user.role !== 'ADMIN') {
-      return res.status(403).json({ message: 'Forbidden: Only Admins can update reports' });
+      return res.status(403).json({ message: 'Only Admins can update reports' });
     }
+
+    // Prevent changing NGO or reviewer after creation
+    delete req.body.ngo;
+    delete req.body.reviewedBy;
 
     const report = await VerificationReport.findOneAndUpdate(
       { _id: req.params.id, isDeleted: false },
@@ -83,6 +105,11 @@ export const updateReport = async (req, res) => {
 
     if (!report) {
       return res.status(404).json({ message: 'Report not found' });
+    }
+
+    // Auto-verify NGO if updated status meets criteria
+    if (req.body.status === 'DONE' && req.body.credibilityScore >= 70) {
+      await NGO.findByIdAndUpdate(report.ngo, { verificationStatus: 'VERIFIED' });
     }
 
     return res.status(200).json(report);
@@ -97,7 +124,7 @@ export const updateReport = async (req, res) => {
 export const deleteReport = async (req, res) => {
   try {
     if (req.user.role !== 'ADMIN') {
-      return res.status(403).json({ message: 'Forbidden: Only Admins can delete reports' });
+      return res.status(403).json({ message: 'Only Admins can delete reports' });
     }
 
     const report = await VerificationReport.findOneAndUpdate(
