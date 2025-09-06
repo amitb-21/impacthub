@@ -10,10 +10,10 @@ const useAuthStore = create((set) => ({
   // Action to clear the error message
   clearError: () => set({ error: null }),
 
-  signup: async (username, email, password) => {
+  signup: async (name, email, password) => {
     set({ loading: true, error: null });
     try {
-      await api.post("/auth/register", { username, email, password });
+      await api.post("/auth/signup", { name, email, password });
       set({ loading: false });
       return true; // Indicate success
     } catch (err) {
