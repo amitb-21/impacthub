@@ -20,7 +20,9 @@ import EventsList from "./pages/Events/EventsList.jsx";
 import EventCreate from "./pages/Events/EventCreate.jsx";
 import EventDetails from "./pages/Events/EventDetails.jsx";
 import AdminView from "./pages/Admin/AdminView.jsx";
-import Testimonial from "./pages/Dashboard/Testimonial.jsx"
+import Testimonial from "./pages/Dashboard/Testimonial.jsx";
+import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
+
 // Global Styles
 import "./App.css";
 
@@ -47,15 +49,20 @@ export default function App() {
 
         {/* Routes with Navbar/Footer */}
         <Route element={<AppLayout />}>
+          {/* Public Routes */}
           <Route path="/" element={<Dashboard />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/ngo/register" element={<NGOForm />} />
+          <Route path="/testimonial" element={<Testimonial />} />
           <Route path="/ngo/:id" element={<NGOProfile />} />
           <Route path="/events" element={<EventsList />} />
-          <Route path="/events/create" element={<EventCreate />} />
           <Route path="/events/:id" element={<EventDetails />} />
-          <Route path="/admin" element={<AdminView />} />
-          <Route path="/testimonial" element={<Testimonial/>}/>
+
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/ngo/register" element={<NGOForm />} />
+            <Route path="/events/create" element={<EventCreate />} />
+            <Route path="/admin" element={<AdminView />} />
+          </Route>
         </Route>
       </Routes>
     </Router>

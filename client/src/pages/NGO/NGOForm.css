@@ -1,3 +1,13 @@
+/* --- Root Variables for a new, modern theme --- */
+:root {
+  --primary-dark: #1a1a2e; /* Deep blue-black background */
+  --secondary-dark: #16213e; /* Lighter container background */
+  --primary-accent: #3b82f6; /* A vibrant blue for accents */
+  --secondary-accent: #4a4c6a; /* Muted accent for borders */
+  --text-color: #e0e0e0; /* Light grey for readable text */
+}
+
+/* --- Main container and layout --- */
 .ngo-form-container {
   display: flex;
   justify-content: center;
@@ -7,6 +17,7 @@
   background-color: var(--primary-dark);
 }
 
+/* --- Form styling --- */
 .ngo-form {
   background-color: var(--secondary-dark);
   padding: 2.5rem;
@@ -14,9 +25,10 @@
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
   width: 100%;
   max-width: 800px;
-  border: 1px solid #4a4c6a;
+  border: 1px solid var(--secondary-accent);
 }
 
+/* --- Form header --- */
 .form-header {
   text-align: center;
   margin-bottom: 2rem;
@@ -35,8 +47,9 @@
   margin: 0 auto;
 }
 
+/* --- Fieldsets and Legends for sectioning --- */
 fieldset {
-  border: 1px solid #4a4c6a;
+  border: 1px solid var(--secondary-accent);
   border-radius: 8px;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -49,6 +62,7 @@ legend {
   padding: 0 0.5rem;
 }
 
+/* --- General form group and label styling --- */
 .form-group {
   margin-bottom: 1rem;
 }
@@ -61,6 +75,7 @@ legend {
   font-size: 0.9rem;
 }
 
+/* --- Input and textarea styling --- */
 .form-group input,
 .form-group textarea {
   width: 100%;
@@ -78,7 +93,7 @@ legend {
 .form-group textarea:focus {
   outline: none;
   border-color: var(--primary-accent);
-  box-shadow: 0 0 8px rgba(46, 156, 202, 0.5);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5); /* Shadow color matching accent */
 }
 
 .form-group textarea {
@@ -87,12 +102,14 @@ legend {
   font-family: inherit;
 }
 
+/* --- Grid layout for multiple fields --- */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
 }
 
+/* --- Submit button --- */
 .submit-button {
   width: 100%;
   padding: 1rem;
@@ -103,24 +120,28 @@ legend {
   cursor: pointer;
   font-size: 1.2rem;
   font-weight: bold;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .submit-button:hover:not(:disabled) {
-  background-color: var(--secondary-accent);
+  background-color: #2563eb; /* A slightly darker shade of the accent blue */
+  transform: translateY(-2px);
 }
 
 .submit-button:disabled {
   background-color: #555;
   cursor: not-allowed;
+  opacity: 0.7;
 }
 
+/* --- Error message styling --- */
 .error-message {
-    color: #ff6b6b;
-    background-color: rgba(255, 107, 107, 0.1);
-    border: 1px solid #ff6b6b;
-    padding: 0.75rem;
-    border-radius: 5px;
-    margin-bottom: 1rem;
-    text-align: center;
+  color: #ff6b6b;
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 1px solid #ff6b6b;
+  padding: 0.75rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  text-align: center;
 }
+
