@@ -1,0 +1,71 @@
+.profile-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--secondary-dark);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: var(--text-light);
+}
+
+.profile-container h2 {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: var(--primary-accent);
+}
+
+.profile-container p {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.profile-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.profile-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.profile-form input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background-color: #333;
+  color: var(--text-light);
+}
+
+.profile-form input:disabled {
+  background-color: #444;
+  cursor: not-allowed;
+}
+
+.profile-form button {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--primary-accent);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.profile-form button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.profile-form button:hover:not(:disabled) {
+  background-color: #005f7a;
+}
+
+.message {
+  text-align: center;
+  margin-top: 1rem;
+  color: var(--primary-accent);
+}

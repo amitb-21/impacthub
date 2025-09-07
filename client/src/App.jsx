@@ -1,70 +1,86 @@
-import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Outlet,
-} from "react-router-dom";
-
-// Layout Components
-import Navbar from "./components/layout/Navbar.jsx";
-import Footer from "./components/layout/Footer.jsx";
-
-// Page Components
-import Login from "./pages/Auth/Login.jsx";
-import Signup from "./pages/Auth/Signup.jsx";
-import Dashboard from "./pages/Dashboard/Dashboard.jsx";
-import NGOForm from "./pages/NGO/NGOForm.jsx";
-import NGOProfile from "./pages/NGO/NGOProfile.jsx";
-import EventsList from "./pages/Events/EventsList.jsx";
-import EventCreate from "./pages/Events/EventCreate.jsx";
-import EventDetails from "./pages/Events/EventDetails.jsx";
-import AdminView from "./pages/Admin/AdminView.jsx";
-import Testimonial from "./pages/Dashboard/Testimonial.jsx";
-import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Login from "./pages/Auth/Login";
+import Signup from "./pages/Auth/Signup";
+import NGOForm from "./pages/NGO/NGOForm";
+import NGOProfile from "./pages/NGO/NGOProfile";
+import EventsList from "./pages/Events/EventsList";
+import EventDetails from "./pages/Events/EventDetails";
+import AdminView from "./pages/Admin/AdminView";
+import Testimonial from "./pages/Dashboard/Testimonial";
+import NGOList from "./pages/NGO/NGOList";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import EventCreate from "./pages/Events/EventCreate";
+import NGOAdminDashboard from "./pages/NGO/NGOAdminDashboard";
+import UserProfile from "./pages/User/UserProfile"; 
 
 // Global Styles
 import "./App.css";
 
-// This component wraps pages that should have the Navbar and Footer
-const AppLayout = () => {
-  return (
-    <>
-      <Navbar />
-      <main>
-        <Outlet />
-      </main>
-      <Footer />
-    </>
-  );
-};
-
-export default function App() {
+function App() {
   return (
     <Router>
-      <Routes>
-        {/* Routes without Navbar/Footer */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-
-        {/* Routes with Navbar/Footer */}
-        <Route element={<AppLayout />}>
+      <Navbar />
+      <main className="py-3">
+        <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Dashboard />} />
           <Route path="/testimonial" element={<Testimonial />} />
+          <Route path="/ngos" element={<NGOList />} />
           <Route path="/ngo/:id" element={<NGOProfile />} />
           <Route path="/events" element={<EventsList />} />
           <Route path="/events/:id" element={<EventDetails />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
 
           {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/ngo/register" element={<NGOForm />} />
-            <Route path="/events/create" element={<EventCreate />} />
-            <Route path="/admin" element={<AdminView />} />
-          </Route>
-        </Route>
-      </Routes>
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ngo/register"
+            element={
+              <ProtectedRoute>
+                <NGOForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminView />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/events/create"
+            element={
+              <ProtectedRoute ngoAdminOnly>
+                <EventCreate />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ngo/dashboard"
+            element={
+              <ProtectedRoute ngoAdminOnly>
+                <NGOAdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </main>
+      <Footer />
     </Router>
   );
 }
+
+export default App;

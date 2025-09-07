@@ -1,0 +1,58 @@
+.ngo-list-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ngo-list-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.ngo-list-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-accent);
+}
+
+.ngo-list-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.ngo-list-actions input {
+  padding: 0.5rem;
+  width: 300px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.register-ngo-btn {
+  background-color: var(--primary-accent);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.ngo-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.ngo-card {
+  background-color: var(--secondary-dark);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.view-details-btn {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--primary-accent);
+  text-decoration: none;
+}
