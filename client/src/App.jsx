@@ -20,7 +20,7 @@ import EventsList from "./pages/Events/EventsList.jsx";
 import EventCreate from "./pages/Events/EventCreate.jsx";
 import EventDetails from "./pages/Events/EventDetails.jsx";
 import AdminView from "./pages/Admin/AdminView.jsx";
-
+import Testimonial from "./pages/Dashboard/Testimonial.jsx"
 // Global Styles
 import "./App.css";
 
@@ -55,6 +55,7 @@ export default function App() {
           <Route path="/events/create" element={<EventCreate />} />
           <Route path="/events/:id" element={<EventDetails />} />
           <Route path="/admin" element={<AdminView />} />
+          <Route path="/testimonial" element={<Testimonial/>}/>
         </Route>
       </Routes>
     </Router>
