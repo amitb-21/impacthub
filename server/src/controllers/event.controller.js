@@ -45,7 +45,7 @@ export const getAllEvents = async (req, res) => {
       .populate({ path: 'createdBy', select: 'name email', match: { isDeleted: false } })
       .lean();
 
-    return res.status(200).json(events);
+    return res.status(200).json({events:events});
   } catch (error) {
     return res.status(500).json({ message: 'Failed to fetch events', error: error.message });
   }
