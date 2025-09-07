@@ -17,7 +17,7 @@ const useAuthStore = create(
       login: async (email, password) => {
         set({ loading: true, error: null });
         try {
-          const response = await fetch(`${API_BASE_URL}/auth/login`, {
+          const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ const useAuthStore = create(
       signup: async (name, email, password) => {
         set({ loading: true, error: null });
         try {
-          const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+          const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ const useAuthStore = create(
         const token = localStorage.getItem('token');
         if (token) {
           try {
-            const response = await fetch(`${API_BASE_URL}/auth/me`, {
+            const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
               headers: {
                 'Authorization': `Bearer ${token}`,
               },
