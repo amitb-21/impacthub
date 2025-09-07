@@ -44,9 +44,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/events" element={<EventList />} />
-            <Route path="/events/:id" element={<EventDetails />} />
+            {/* Temporarily commented out until EventDetails component is created */}
+            {/* <Route path="/events/:id" element={<EventDetails />} /> */}
             <Route path="/ngos" element={<NGOList />} />
-            <Route path="/ngos/:id" element={<NGODetails />} />
+            {/* Temporarily commented out until NGODetails component is created */}
+            {/* <Route path="/ngos/:id" element={<NGODetails />} /> */}
             <Route path="/testimonials" element={<Testimonials />} />
 
             {/* Protected Routes */}

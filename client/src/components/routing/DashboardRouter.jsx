@@ -1,9 +1,9 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import useAuthStore from "../../store";
-import AdminPanel from "../pages/Admin/AdminPanel";
-import NGOAdminDashboard from "../pages/NGO/NGOAdminDashboard";
-import UserProfile from "../pages/User/UserProfile";
+import AdminPanel from "../../pages/Admin/AdminPanel";
+import NGOAdminDashboard from "../../pages/NGO/NGOAdminDashboard";
+import UserProfile from "../../pages/User/UserProfile";
 
 const DashboardRouter = () => {
   const { currentUser } = useAuthStore();
