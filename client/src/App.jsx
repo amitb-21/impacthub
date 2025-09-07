@@ -1,84 +1,88 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
-import Dashboard from "./pages/Dashboard/Dashboard";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+
+// Auth Pages
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
-import NGOForm from "./pages/NGO/NGOForm";
-import NGOProfile from "./pages/NGO/NGOProfile";
-import EventsList from "./pages/Events/EventsList";
-import EventDetails from "./pages/Events/EventDetails";
-import AdminView from "./pages/Admin/AdminView";
-import Testimonial from "./pages/Dashboard/Testimonial";
-import NGOList from "./pages/NGO/NGOList";
-import ProtectedRoute from "./components/common/ProtectedRoute";
-import EventCreate from "./pages/Events/EventCreate";
-import NGOAdminDashboard from "./pages/NGO/NGOAdminDashboard";
-import UserProfile from "./pages/User/UserProfile"; 
 
-// Global Styles
-import "./App.css";
+// Public Pages
+import Dashboard from "./pages/Dashboard/Dashboard";
+import EventList from "./pages/Events/EventsList";
+import NGOList from "./pages/NGO/NGOList";
+import Testimonials from "./pages/Dashboard/Testimonial";
+
+import UserProfile from "./pages/User/UserProfile";
+
+// NGO Pages
+import NGOForm from "./pages/NGO/NGOForm";
+
+// Admin Pages
+import AdminPanel from "./pages/Admin/AdminPanel";
+
+// NGO Admin Pages
+import NGOAdminDashboard from "./pages/NGO/NGOAdminDashboard";
+import EventForm from "./pages/Events/EventForm";
+
+// Dashboard Router
+import DashboardRouter from "./components/routing/DashboardRouter";
+
+// Role-based route protection component
+import RoleProtectedRoute from "./components/common/RoleProtectedRoute";
 
 function App() {
   return (
     <Router>
-      <Navbar />
-      <main className="py-3">
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/testimonial" element={<Testimonial />} />
-          <Route path="/ngos" element={<NGOList />} />
-          <Route path="/ngo/:id" element={<NGOProfile />} />
-          <Route path="/events" element={<EventsList />} />
-          <Route path="/events/:id" element={<EventDetails />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+      <div className="App">
+        <Navbar />
+        <main className="main-content">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/events" element={<EventList />} />
+            <Route path="/events/:id" element={<EventDetails />} />
+            <Route path="/ngos" element={<NGOList />} />
+            <Route path="/ngos/:id" element={<NGODetails />} />
+            <Route path="/testimonials" element={<Testimonials />} />
 
-          {/* Protected Routes */}
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <UserProfile />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/ngo/register"
-            element={
-              <ProtectedRoute>
-                <NGOForm />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute adminOnly>
-                <AdminView />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/events/create"
-            element={
-              <ProtectedRoute ngoAdminOnly>
-                <EventCreate />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/ngo/dashboard"
-            element={
-              <ProtectedRoute ngoAdminOnly>
-                <NGOAdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </main>
-      <Footer />
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoute />}>
+              {/* Universal Dashboard Route - routes to appropriate dashboard based on role */}
+              <Route path="/dashboard" element={<DashboardRouter />} />
+
+              {/* User Routes */}
+              <Route path="/profile" element={<UserProfile />} />
+
+              {/* NGO Registration (accessible by all authenticated users) */}
+              <Route path="/ngo/register" element={<NGOForm />} />
+
+              {/* Admin Routes */}
+              <Route element={<RoleProtectedRoute allowedRoles={["ADMIN"]} />}>
+                <Route path="/admin" element={<AdminPanel />} />
+              </Route>
+
+              {/* NGO Admin Routes */}
+              <Route
+                element={
+                  <RoleProtectedRoute allowedRoles={["NGO_ADMIN", "ADMIN"]} />
+                }
+              >
+                <Route path="/ngo-dashboard" element={<NGOAdminDashboard />} />
+                <Route path="/events/create" element={<EventForm />} />
+                <Route path="/events/update/:id" element={<EventForm />} />
+              </Route>
+            </Route>
+
+            {/* 404 Route */}
+            <Route path="*" element={<div>Page Not Found</div>} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </Router>
   );
 }

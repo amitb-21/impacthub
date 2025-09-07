@@ -45,7 +45,7 @@ export const createNGO = async (req, res) => {
  */
 export const getAllNGOs = async (req, res) => {
   try {
-    const { search, page = 1, limit = 10, status } = req.query;
+    const { search, page = 1, limit = 10, status, createdBy } = req.query;
 
     const query = { isDeleted: false };
 
@@ -59,6 +59,11 @@ export const getAllNGOs = async (req, res) => {
 
     if (status) {
       query.verificationStatus = status.toUpperCase();
+    }
+
+    // Add filter for createdBy (for NGO Admin to see their own NGOs)
+    if (createdBy) {
+      query.createdBy = createdBy;
     }
 
     const ngos = await NGO.find(query)

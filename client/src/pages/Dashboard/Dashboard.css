@@ -9,9 +9,21 @@ body {
   font-family: 'Inter', sans-serif;
   color: #AAABB8;
   line-height: 1.6;
+  /* Remove any default margins/padding that might cause blank space */
+  margin: 0;
+  padding: 0;
 }
 
-/* Header & Logo Section */
+/* Remove any potential blank space from the main content wrapper */
+.content-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(180deg, rgba(37, 39, 77, 0.9) 0%, rgba(70, 72, 102, 0.8) 100%);
+  /* Ensure it starts right after the navbar */
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* Header & Logo Section - Remove if this is causing blank space */
 .logo {
   background: rgba(170, 171, 184, 0.05);
   backdrop-filter: blur(10px);
@@ -20,9 +32,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: sticky;
-  top: 0;
+  /* Remove sticky positioning if it's causing issues */
+  position: relative;
   z-index: 100;
+  /* Remove any margin that might cause blank space */
+  margin: 0;
 }
 
 .mainlogo {
@@ -67,16 +81,17 @@ body {
   font-weight: 300;
 }
 
-/* Navigation Panel */
+/* Navigation Panel - Remove if not needed */
 .panel {
   background: rgba(37, 39, 77, 0.95);
   backdrop-filter: blur(20px);
   display: flex;
   justify-content: center;
   border-bottom: 1px solid rgba(46, 156, 202, 0.3);
-  position: sticky;
-  top: 140px;
+  /* Remove sticky positioning */
+  position: relative;
   z-index: 99;
+  margin: 0;
 }
 
 .main {
@@ -123,17 +138,13 @@ body {
   width: 80%;
 }
 
-/* Main Content Container */
-.content-wrapper {
-  min-height: 100vh;
-  background: linear-gradient(180deg, rgba(37, 39, 77, 0.9) 0%, rgba(70, 72, 102, 0.8) 100%);
-}
-
-/* Details Section */
+/* Details Section - This is your main content */
 .details {
   padding: 4rem 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  /* Ensure no extra margin at top */
+  margin-top: 0;
 }
 
 .projects h2 {
@@ -174,6 +185,7 @@ body {
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
+
 .project-image {
   height: 200px;
   width: 100%;
@@ -189,7 +201,6 @@ body {
   transform: scale(1.05);
   box-shadow: 0 15px 35px rgba(46, 156, 202, 0.4);
 }
-/* --- END MODIFIED SECTION --- */
 
 .describe p {
   font-size: 1.1rem;
@@ -261,6 +272,7 @@ body {
   list-style: none;
   max-width: 800px;
   margin: 0 auto;
+  counter-reset: step-counter;
 }
 
 .joinus li {
@@ -290,10 +302,6 @@ body {
   align-items: center;
   justify-content: center;
   font-weight: 600;
-}
-
-.joinus ul {
-  counter-reset: step-counter;
 }
 
 .joinus a {

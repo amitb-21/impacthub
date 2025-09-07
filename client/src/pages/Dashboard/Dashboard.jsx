@@ -17,6 +17,7 @@ const Dashboard = () => {
 
   return (
     <div className="content-wrapper">
+      {/* Remove the .logo and .panel sections that might be causing blank space */}
       <div className="details">
         <div className="projects">
           <h2>Some of Our Featured Projects</h2>

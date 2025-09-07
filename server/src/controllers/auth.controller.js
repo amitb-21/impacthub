@@ -114,3 +114,91 @@ export const me = async (req, res) => {
     return res.status(500).json({ message: 'Failed to fetch profile', error: error.message });
   }
 };
+
+/**
+ * Update user profile
+ */
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, phone, bio, interests, location, avatar } = req.body;
+    
+    // Only allow updating certain fields
+    const allowedUpdates = {
+      name,
+      phone,
+      bio,
+      interests,
+      location,
+      avatar
+    };
+
+    // Remove undefined values
+    Object.keys(allowedUpdates).forEach(key => {
+      if (allowedUpdates[key] === undefined) {
+        delete allowedUpdates[key];
+      }
+    });
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      allowedUpdates,
+      { new: true, runValidators: true }
+    ).select('-passwordHash');
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.status(200).json({
+      message: 'Profile updated successfully',
+      user: updatedUser
+    });
+  } catch (error) {
+    console.error('Profile update error:', error);
+    return res.status(500).json({ 
+      message: 'Failed to update profile', 
+      error: error.message 
+    });
+  }
+};
+
+/**
+ * Change password
+ */
+export const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ 
+        message: 'Current password and new password are required' 
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Verify current password
+    const isValidPassword = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isValidPassword) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    // Hash new password
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+    
+    // Update password
+    user.passwordHash = newPasswordHash;
+    await user.save();
+
+    return res.status(200).json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    return res.status(500).json({ 
+      message: 'Failed to change password', 
+      error: error.message 
+    });
+  }
+};

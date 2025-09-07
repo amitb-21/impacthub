@@ -28,11 +28,12 @@
   font-size: 2rem;
   display: flex;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .nav-menu {
   display: grid;
-  grid-template-columns: repeat(6, auto);
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   grid-gap: 10px;
   list-style: none;
   text-align: center;
@@ -43,6 +44,8 @@
 
 .nav-item {
   height: 80px;
+  display: flex;
+  align-items: center;
 }
 
 .nav-links {
@@ -52,6 +55,8 @@
   text-decoration: none;
   padding: 0.5rem 1rem;
   height: 100%;
+  gap: 0.5rem;
+  transition: all 0.2s ease-out;
 }
 
 .nav-links:hover {
@@ -66,26 +71,45 @@
 .menu-icon {
   display: none;
 }
+
+/* Logout button styling */
 .logout-btn {
   background: none;
   border: none;
   color: #fff;
   cursor: pointer;
   font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  height: 100%;
+  transition: all 0.2s ease-out;
 }
+
 .logout-btn:hover {
   color: #2e9cca;
+  border-bottom: 4px solid #2e9cca;
 }
+
+.logout-text {
+  font-size: 1rem;
+}
+
+/* Dropdown styling */
 .dropdown {
   position: relative;
   display: inline-block;
+  height: 100%;
 }
 
 .dropdown-content {
   display: none;
   position: absolute;
+  top: 100%;
+  right: 0;
   background-color: #f9f9f9;
-  min-width: 160px;
+  min-width: 180px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
   list-style: none;
@@ -101,6 +125,7 @@
   text-decoration: none;
   display: block;
   text-align: left;
+  transition: background-color 0.2s ease;
 }
 
 .dropdown:hover .dropdown-content {
@@ -112,7 +137,7 @@
   background-color: #f1f1f1;
 }
 
-/* New Profile Styles */
+/* Profile section styling */
 .nav-profile {
   flex-direction: row;
   gap: 8px;
@@ -122,4 +147,113 @@
   background-color: #555;
   border-radius: 50%;
   padding: 4px;
+}
+
+/* Mobile responsiveness */
+@media screen and (max-width: 960px) {
+  .navbar-container {
+    padding: 0 20px;
+  }
+  
+  .nav-menu {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 90vh;
+    position: absolute;
+    top: 80px;
+    left: -100%;
+    opacity: 1;
+    transition: all 0.5s ease;
+    background: linear-gradient(90deg, rgb(28, 27, 27) 0%, rgb(26, 23, 23) 100%);
+  }
+
+  .nav-menu.active {
+    background: linear-gradient(90deg, rgb(28, 27, 27) 0%, rgb(26, 23, 23) 100%);
+    left: 0;
+    opacity: 1;
+    transition: all 0.5s ease;
+    z-index: 1;
+  }
+
+  .nav-links {
+    text-align: center;
+    padding: 2rem;
+    width: 100%;
+    display: table;
+  }
+
+  .nav-links:hover {
+    background-color: #2e9cca;
+    border-radius: 0;
+    border-bottom: none;
+  }
+
+  .navbar-logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(25%, 50%);
+  }
+
+  .menu-icon {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(-100%, 60%);
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #fff;
+  }
+
+  .nav-links-mobile {
+    display: block;
+    text-align: center;
+    margin: 2rem auto;
+    border-radius: 4px;
+    width: 80%;
+    text-decoration: none;
+    font-size: 1.5rem;
+    background-color: transparent;
+    color: #fff;
+    padding: 14px 20px;
+    border: 1px solid #fff;
+    transition: all 0.3s ease-out;
+  }
+
+  .nav-links-mobile:hover {
+    background: #fff;
+    color: #242424;
+    transition: 250ms;
+  }
+
+  .logout-btn {
+    width: 80%;
+    margin: 2rem auto;
+    border-radius: 4px;
+    background-color: transparent;
+    border: 1px solid #fff;
+    padding: 14px 20px;
+    font-size: 1.5rem;
+    justify-content: center;
+  }
+
+  .logout-btn:hover {
+    background: #fff;
+    color: #242424;
+    border-bottom: 1px solid #fff;
+  }
+
+  .dropdown-content {
+    position: static;
+    display: block;
+    background-color: rgba(46, 156, 202, 0.1);
+    box-shadow: none;
+    width: 100%;
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
 }

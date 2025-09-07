@@ -42,6 +42,7 @@ const Navbar = () => {
                 Home
               </Link>
             </li>
+
             <li className="nav-item">
               <Link
                 to="/events"
@@ -51,6 +52,13 @@ const Navbar = () => {
                 Events
               </Link>
             </li>
+
+            <li className="nav-item">
+              <Link to="/ngos" className="nav-links" onClick={closeMobileMenu}>
+                NGOs
+              </Link>
+            </li>
+
             <li className="nav-item">
               <Link
                 to="/testimonial"
@@ -62,18 +70,26 @@ const Navbar = () => {
             </li>
 
             {currentUser ? (
+              // Logged in user menu
               <>
                 <li className="nav-item dropdown">
                   <span className="nav-links">
-                    Menu <ChevronDown size={20} />
+                    Actions <ChevronDown size={20} />
                   </span>
                   <div className="dropdown-content">
-                    <Link to="/ngos" onClick={closeMobileMenu}>
-                      Find an NGO
-                    </Link>
                     <Link to="/ngo/register" onClick={closeMobileMenu}>
-                      Register Your NGO
+                      Register NGO
                     </Link>
+                    {currentUser.role === "NGO_ADMIN" && (
+                      <Link to="/events/create" onClick={closeMobileMenu}>
+                        Create Event
+                      </Link>
+                    )}
+                    {currentUser.role === "ADMIN" && (
+                      <Link to="/admin/dashboard" onClick={closeMobileMenu}>
+                        Admin Panel
+                      </Link>
+                    )}
                   </div>
                 </li>
 
@@ -90,23 +106,37 @@ const Navbar = () => {
 
                 <li className="nav-item">
                   <button
-                    className="nav-links-mobile logout-btn"
+                    className="nav-links logout-btn"
                     onClick={handleLogout}
                   >
-                    Logout <LogOut />
+                    <LogOut size={16} />
+                    <span className="logout-text">Logout</span>
                   </button>
                 </li>
               </>
             ) : (
-              <li className="nav-item">
-                <Link
-                  to="/login"
-                  className="nav-links-mobile"
-                  onClick={closeMobileMenu}
-                >
-                  Login
-                </Link>
-              </li>
+              // Not logged in user menu
+              <>
+                <li className="nav-item">
+                  <Link
+                    to="/signup"
+                    className="nav-links"
+                    onClick={closeMobileMenu}
+                  >
+                    Sign Up
+                  </Link>
+                </li>
+
+                <li className="nav-item">
+                  <Link
+                    to="/login"
+                    className="nav-links"
+                    onClick={closeMobileMenu}
+                  >
+                    Login
+                  </Link>
+                </li>
+              </>
             )}
           </ul>
         </div>
